@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Build the Heart of an AM Radio: DIY Guide, Milestone 1</title>
+<meta name="description" content="A DIY guide to building the tuner and detector of an AM radio, with the journey and the challenges.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0f14;--panel:#121923;--line:#223042;--tx:#e6edf5;--mut:#8fa3b8;--cu:#e39a4a;--sig:#4fd1c5;--bad:#ff7a7a}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.65 'Space Grotesk',system-ui,sans-serif}
+nav{position:sticky;top:0;z-index:20;display:flex;gap:6px;overflow-x:auto;padding:10px 16px;background:#0b0f14e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav a{white-space:nowrap;color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:99px;font-size:14px}nav a.on{background:var(--cu);color:#111}
+.hero{min-height:90vh;display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:20px;padding:30px 5vw;max-width:1280px;margin:auto}
+#scene{width:100%;height:min(68vh,540px);cursor:grab;touch-action:pan-y;display:block}
+h1{font-size:clamp(36px,5.2vw,68px);line-height:1.03;margin:.15em 0 .3em}h1 em{color:var(--cu);font-style:normal}
+.tag{font:600 13px 'JetBrains Mono',monospace;color:var(--cu);letter-spacing:.12em;text-transform:uppercase}
+.lead{color:var(--mut);font-size:19px;max-width:34em}
+.btn{display:inline-block;background:var(--cu);color:#111;padding:12px 22px;border-radius:99px;text-decoration:none;font-weight:700;margin-top:10px;border:0;cursor:pointer;font:inherit;font-weight:700}
+.tune{margin-top:26px;max-width:420px}.read{font:600 30px 'JetBrains Mono',monospace;color:var(--sig)}.read small{font-size:14px;color:var(--mut)}
+input[type=range]{width:100%;accent-color:var(--cu)}
+main{max-width:1040px;margin:auto;padding:0 5vw}
+section.step{padding:76px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(26px,3.4vw,42px);line-height:1.15;margin:.2em 0 .5em}h3{margin:.2em 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;margin:22px 0}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:860px){.hero,.grid,.g3{grid-template-columns:1fr}.hero{min-height:0}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.card h4{margin:0 0 6px;font:600 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--sig)}
+.diy{border-left:4px solid var(--sig)}.oops{border-left:4px solid var(--bad)}.oops h4{color:var(--bad)}
+.card ol,.card ul{margin:6px 0;padding-left:20px}.card li{margin:5px 0}
+figure{margin:0}figure img{width:100%;border-radius:14px;display:block;cursor:zoom-in;max-height:540px;object-fit:cover}
+figcaption{font-size:13px;color:var(--mut);margin-top:6px}
+table{width:100%;border-collapse:collapse;font:14px 'JetBrains Mono',monospace}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:400}td b{color:var(--cu);font-weight:600}
+.scroll{overflow-x:auto}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s,transform .8s}.rv.in{opacity:1;transform:none}
+canvas#wave{width:100%;height:270px;background:#0a1017;border-radius:14px;border:1px solid var(--line);display:block}
+#sch{width:100%;background:#0a1017;border-radius:14px;border:1px solid var(--line)}
+svg .wire{stroke:#6f8399;fill:none;stroke-width:2}svg .part{stroke:var(--cu);fill:none;stroke-width:2.5}svg .fillp{fill:var(--cu);stroke:var(--cu)}svg text{fill:var(--mut);font:12px 'JetBrains Mono',monospace}
+svg .flow{stroke:var(--sig);stroke-dasharray:6 8;animation:dash 1s linear infinite;fill:none;stroke-width:2.5}@keyframes dash{to{stroke-dashoffset:-14}}
+svg g.st{opacity:.3;transition:opacity .4s}svg g.st.on{opacity:1}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.pills button{background:var(--panel);color:var(--tx);border:1px solid var(--line);padding:8px 16px;border-radius:99px;cursor:pointer;font:inherit;font-size:14px}.pills button.on{background:var(--sig);color:#062;border-color:var(--sig)}
+.tl{border-left:2px solid var(--line);margin:18px 0 18px 8px;padding-left:22px}.tl div{position:relative;margin:0 0 20px}.tl div:before{content:"";position:absolute;left:-30px;top:8px;width:14px;height:14px;border-radius:50%;background:var(--bad);border:3px solid var(--bg)}.tl div.ok:before{background:var(--sig)}
+.big{font:600 40px 'JetBrains Mono',monospace;color:var(--cu)}
+.blocks{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:24px 0}.blocks span{padding:12px 16px;border-radius:12px;border:2px dashed var(--line);color:var(--mut);font-size:14px}.blocks span.done{border:2px solid var(--sig);color:var(--tx);background:#0f2a2a}.blocks i{color:var(--mut);font-style:normal}
+.dots span{display:inline-block;animation:b 1.3s infinite}.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}@keyframes b{50%{transform:translateY(-12px);color:var(--cu)}}
+input.n{width:84px;background:#0a1017;border:1px solid var(--line);color:var(--tx);padding:6px 8px;border-radius:8px;font:inherit}
+#lb{position:fixed;inset:0;background:#000d;display:none;place-items:center;z-index:50;cursor:zoom-out}#lb.on{display:grid}#lb img{max-width:94vw;max-height:92vh;border-radius:10px}
+footer{padding:50px 5vw;text-align:center;color:var(--mut);border-top:1px solid var(--line);font-size:14px}footer a{color:var(--cu)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+</style></head><body>
+<nav id="nav"><a href="#top">Start</a><a href="#how">How it works</a><a href="#parts">Parts</a><a href="#theory">Theory</a><a href="#predict">Predict</a><a href="#coil">Coil</a><a href="#detector">Detector</a><a href="#crisis">Instrument crisis</a><a href="#measure">Measure</a><a href="#m2">M2</a></nav>
+
+<header class="hero" id="top">
+ <div><div class="tag">ELEG103 · Lab 2 · Milestone 1</div>
+ <h1>Build the heart of an <em>AM radio</em></h1>
+ <p class="lead">A coil, a variable capacitor and one diode. This is a hands-on guide to the tuner and detector, written while we built it, including everything that went wrong on the way.</p>
+ <a class="btn" href="#how">Start the journey</a>
+ <div class="tune"><div class="tag">Turn the knob (drag the 3D model too)</div>
+ <input id="cap" type="range" min="20" max="280" value="150" aria-label="Tuning capacitance">
+ <div class="read"><span id="rc">150</span> pF &rarr; <span id="rf">0.76</span> MHz <small>for L = 291.45 &micro;H</small></div></div></div>
+ <canvas id="scene" aria-label="Interactive 3D model of the tuning coil and variable capacitor"></canvas>
+</header>
+
+<main>
+<section class="step rv" id="how"><div class="tag">Step 0 · The big picture</div><h2>Two halves: pick a station, then pull the sound out</h2>
+<p>An AM radio starts with the two circuits we build in Milestone 1. The <b>tuner</b> (a coil and a capacitor) resonates at one frequency and ignores the rest. The <b>detector</b> (a diode, a resistor and a capacitor) throws away half of the wave and smooths what is left, so only the slow shape of the signal, the sound, survives. Tap the buttons to light up each half.</p>
+<div class="pills" id="pills"><button data-s="all" class="on">Whole circuit</button><button data-s="gen">Source and test loop</button><button data-s="tank">Tuner (tank)</button><button data-s="det">Detector</button></div>
+<svg id="sch" viewBox="0 0 760 240" role="img" aria-label="Schematic of M1: generator, test loop, LC tank, diode detector"></svg>
+<h3 style="margin-top:34px">Watch the sound come out</h3>
+<canvas id="wave"></canvas>
+<p style="color:var(--mut);font-size:14px;margin:6px 0 0">Modulation depth (how loud the "station" is): <input id="md" type="range" min="10" max="95" value="70" style="width:200px;vertical-align:middle"></p>
+</section>
+
+<section class="step rv" id="parts"><div class="tag">Step 1 · Know your parts</div><h2>Before touching a wire, we had to understand the parts</h2>
+<div class="grid"><div>
+<p>We started by learning what each element does and how it fits the project. We watched many technician tutorials until the roles were clear: the coil and capacitor choose a frequency, the diode keeps one side of the wave, the resistor and capacitor smooth it.</p>
+<p>Then came the hunt. These parts are not easy to find in the stock market. We searched around, checked that what was on the table was really what the circuit needs, and bought sets for ourselves and our colleagues.</p></div>
+<figure><img src="images/p8.jpg" alt="A bag full of variable tuning capacitors" loading="lazy"><figcaption>A bag of tuning capacitors. Finding the right ones took patience.</figcaption></figure></div>
+<div class="card scroll"><table><tr><th>Part</th><th>Value</th><th>Its job</th></tr>
+<tr><td>Enamelled copper wire</td><td>0.3 mm, about 12 m</td><td>The coil, L</td></tr>
+<tr><td>PVC pipe</td><td>50 mm diameter</td><td>The coil former</td></tr>
+<tr><td>Tuning capacitor</td><td>20 to 280 pF (AM section)</td><td>Tunes the station, C</td></tr>
+<tr><td>1N60P diode</td><td>band toward TP3</td><td>Keeps the wave's peaks</td></tr>
+<tr><td>Resistor + capacitor</td><td>15 k&Omega; and 3.3 nF</td><td>Smooth to the envelope</td></tr></table></div>
+<div class="card diy" style="margin-top:20px"><h4>DIY tip</h4>A tuning capacitor has several sections and many pins. Only its AM section gives the 20 to 280 pF range. Tutorials taught us how to tell the pins apart.</div>
+</section>
+
+<section class="step rv" id="theory"><div class="tag">Step 2 · Theory you actually need</div><h2>Three ideas, each doing one job</h2>
+<p>After the parts, we watched more tutorials on how a crystal radio works: rectification, the smoothing capacitor and how an envelope is extracted from a carrier. They boil down to three ideas.</p>
+<div class="grid g3">
+<div class="card"><h4>1 · Resonance</h4><p>A coil and a capacitor swing energy back and forth at <b>f₀ = 1 / (2π√LC)</b>. At that frequency the voltage across the tank is the largest, so one station stands out.</p></div>
+<div class="card"><h4>2 · Rectification</h4><p>The diode only conducts one way, so the negative half of the carrier is cut off. What is left follows the signal's peaks.</p></div>
+<div class="card"><h4>3 · Smoothing</h4><p>RC = 15 kΩ × 3.3 nF ≈ 50 µs. That is slower than one carrier cycle (about 1.2 µs at 819 kHz) but faster than audio (200 µs at 5 kHz), so the voltage follows the envelope, the sound.</p></div></div>
+<div class="card diy"><h4>Try it: Wheeler's coil calculator</h4>
+Turns <input class="n" id="wn" type="number" value="75"> Diameter (mm) <input class="n" id="wd" type="number" value="50"> Length (mm) <input class="n" id="wl" type="number" value="25">
+<p style="margin:10px 0 0">L ≈ <b id="wL" style="color:var(--cu)">291.45</b> µH. Tuned with C = <input class="n" id="wc" type="number" value="129.5"> pF it resonates at <b id="wf" style="color:var(--sig)">819</b> kHz.</p></div>
+</section>
+
+<section class="step rv" id="predict"><div class="tag">Step 3 · Predict first</div><h2>Do the maths before the soldering</h2>
+<p>Wheeler's formula, L ≈ d²n² / (457d + 1016l), with n = 75 turns, d = 50 mm and l = 25 mm gives the coil. From L, the tuning formula gives the capacitor for 819 kHz and the two ends of the band.</p>
+<div class="card scroll"><table><tr><th></th><th>L (µH)</th><th>C for 819 kHz (pF)</th><th>f at 280 pF (kHz)</th><th>f at 20 pF (MHz)</th><th>RC (µs)</th></tr>
+<tr><td>Prediction</td><td><b>291.45</b></td><td><b>129.5</b></td><td><b>557</b></td><td><b>2.084</b></td><td><b>49.5</b></td></tr></table></div>
+<p style="color:var(--mut)">Table 4 of the lab. These numbers are what we measure against in Step 7.</p></section>
+
+<section class="step rv" id="coil"><div class="tag">Step 4 · Build the tuner</div><h2>Wind the coil, mount the capacitor</h2>
+<p>We watched how technicians wrap a coil on a PVC pipe, then built the circuit quickly. The hands-on part is short once the prep is done.</p>
+<div class="grid"><div class="card diy"><h4>Do this</h4><ol>
+<li>Tape the wire's start to the pipe.</li><li>Wind <b>75 turns side by side</b>, no gaps, no crossings (about 25 mm long).</li><li>Tape the end.</li>
+<li>Scrape 1 cm of enamel off both ends until the copper shines.</li><li>Fix the capacitor to the pipe with tape or glue.</li><li>Join the coil's ends to the capacitor's AM terminals.</li></ol></div>
+<figure><img src="images/p9.jpg" alt="Two PVC coils on the lab trainer: the 75-turn coil and the 5-turn test loop" loading="lazy"><figcaption>The 75-turn coil (right) and the 5-turn test loop (left) on the lab trainer.</figcaption></figure></div></section>
+
+<section class="step rv" id="detector"><div class="tag">Step 5 · Build the detector</div><h2>One diode, one resistor, one capacitor</h2>
+<div class="grid"><div class="card diy"><h4>Do this on the breadboard</h4><ol>
+<li>Put the 1N60P from <b>TP1</b> (top of the tank) to <b>TP3</b>, with its band toward TP3.</li>
+<li>Put the 15 kΩ and the 3.3 nF side by side from TP3 to ground (the tank's other end).</li>
+<li>Probe TP1 on the scope with probe and channel both on ×10. A ×1 probe adds about 100 pF and detunes the tank.</li></ol></div>
+<figure><img src="images/p6.jpg" alt="Breadboard with the diode and capacitor of the detector" loading="lazy"><figcaption>The detector on a small breadboard.</figcaption></figure></div>
+<figure><img src="images/p5.jpg" alt="The bench: both coils, the breadboard and two scope probes" loading="lazy"><figcaption>The whole bench: coils, detector, probes, and a notebook for the readings.</figcaption></figure></section>
+
+<section class="step rv" id="crisis"><div class="tag">Step 6 · The challenge that lasted until submission</div><h2>The circuit was easy. Finding a working instrument was not.</h2>
+<p>We built the circuit in no time. Then we discovered the real problem: to test a radio you need a function generator and an oscilloscope that actually work, and we could not find them.</p>
+<div class="tl">
+<div><b>We tested many, many of them.</b> Almost none worked. One nearly did, but we could not keep it for long, and although it gave the frequency we needed, it did not give the voltage.</div>
+<div><b>Plan B: build a function generator from an ESP32.</b> Its frequency stopped at about 750 kHz, not enough to cover our band.</div>
+<div><b>Plan C: an AD9833 module.</b> It would fill the gap, but it was too expensive to buy.</div>
+<div class="ok"><b>The compromise.</b> We used the working generator. It reached the frequency range but not the voltage we wanted, and that is the setup behind every reading in this guide.</div></div>
+<div class="grid"><figure><img src="images/p3.jpg" alt="An oscilloscope screen showing a flat trace" loading="lazy"><figcaption>One of the many instrument tests: the readout was there, the signal was not what we needed.</figcaption></figure>
+<figure><img src="images/p4.jpg" alt="An ESP32 development board" loading="lazy"><figcaption>The ESP32 that became a (too slow) function generator.</figcaption></figure></div>
+<figure style="max-width:420px"><img src="images/p2.jpg" alt="Instek function generator showing 834.0" loading="lazy"><figcaption>The generator that finally worked.</figcaption></figure>
+<div class="card oops" style="margin-top:20px"><h4>Lesson</h4>Check your instruments before you trust your circuit. Compensate the probe, confirm the generator's real output, and know a source's limits. A sound card tops out near 20 kHz and an ESP32 near 750 kHz, both far from an AM band that starts around 560 kHz.</div></section>
+
+<section class="step rv" id="measure"><div class="tag">Step 7 · Measure</div><h2>Does the tank resonate where the maths said?</h2>
+<p>We drove a 5-turn test loop from the generator, a few centimetres from the coil on the same axis, and looked for the peaks at TP1: first at half travel for f₀, then at each end of the capacitor's travel, then the 0.7 points for the bandwidth.</p>
+<div class="card scroll"><table><tr><th>Band low end (kHz)</th><th>Band high end (MHz)</th><th>f₀ at half travel (kHz)</th><th>f_low (kHz)</th><th>f_high (kHz)</th><th>Q</th></tr>
+<tr><td><b>422.74</b></td><td><b>0.75</b></td><td><b>567.4</b></td><td><b>513.6</b></td><td><b>624</b></td><td><b>5.13</b></td></tr></table></div>
+<div class="card" style="margin-top:22px"><h4>Selectivity</h4><p>The 0.7-of-peak points are 513.6 and 624 kHz, a bandwidth of about 110 kHz around 567.4 kHz.</p><div class="big">Q ≈ 5.13</div><p style="color:var(--mut)">A modest Q: the tank picks a neighbourhood of frequencies, not a single line. Fine for a first radio, and something to improve.</p></div>
+<div class="grid"><figure><img src="images/p1.jpg" alt="Oscilloscope showing a sine near 1.126 MHz" loading="lazy"><figcaption>A scope capture: a clean sine at about 1.126 MHz.</figcaption></figure>
+<figure><img src="images/p7.jpg" alt="Function generator and Rigol oscilloscope on the bench" loading="lazy"><figcaption>Generator and scope in action.</figcaption></figure></div></section>
+
+<section class="step rv" id="m2"><div class="tag">Milestone 2</div><h2>To be continued<span class="dots"><span>.</span><span>.</span></span></h2>
+<p>M1 gave us a tuner that picks a frequency and a detector that finds the envelope. Next, the radio needs gain, so weak stations rise above the diode's dead zone and the sound can drive a speaker.</p>
+<div class="blocks"><span class="done">Tuned circuit · M1</span><i>&rarr;</i><span>Gain</span><i>&rarr;</i><span class="done">Detector · M1</span><i>&rarr;</i><span>Gain</span><i>&rarr;</i><span>Sound</span></div>
+<p style="color:var(--mut)">This section will grow as the next milestone is built.</p></section>
+</main>
+<footer>Built by Mostafa Hany, Aya Emad and Youssef Ahmed · Systems and Biomedical Engineering, Cairo University<br>ELEG103 Analog and Digital Electronics · Fall 2026 · <a href="https://github.com/Jiro75">github.com/Jiro75</a></footer>
+<div id="lb"><img alt=""></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),L0=291.45e-6,fOf=c=>1/(2*Math.PI*Math.sqrt(L0*c*1e-12));
+/* reveal, nav, lightbox */
+const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('in')),{threshold:.06});
+document.querySelectorAll('.rv').forEach(s=>io.observe(s));
+const links=[...document.querySelectorAll('#nav a')];
+const so=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+x.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('header,section.step').forEach(s=>so.observe(s));
+const lb=$('lb');document.querySelectorAll('figure img').forEach(i=>i.onclick=()=>{lb.querySelector('img').src=i.src;lb.classList.add('on')});lb.onclick=()=>lb.classList.remove('on');
+/* calculators */
+function wheeler(){const n=+$('wn').value,d=+$('wd').value,l=+$('wl').value,c=+$('wc').value,L=d*d*n*n/(457*d+1016*l);$('wL').textContent=L.toFixed(2);$('wf').textContent=(1/(2*Math.PI*Math.sqrt(L*1e-6*c*1e-12))/1e3).toFixed(0)}
+['wn','wd','wl','wc'].forEach(i=>$(i).oninput=wheeler);wheeler();
+/* 3D coil + variable capacitor */
+(function(){const el=$('scene');if(!window.THREE)return;
+const R=new THREE.WebGLRenderer({canvas:el,antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(38,1,.1,100);C.position.set(0,3,15);C.lookAt(0,0,0);
+S.add(new THREE.AmbientLight(0xffffff,.6));const dl=new THREE.DirectionalLight(0xffffff,.9);dl.position.set(6,9,7);S.add(dl);
+const G=new THREE.Group();S.add(G);G.rotation.set(.3,-.5,0);const M=new THREE.Group();M.position.x=-1.725;G.add(M);
+M.add(new THREE.Mesh(new THREE.CylinderGeometry(2.5,2.5,3.4,64,1,true),new THREE.MeshStandardMaterial({color:0xdfe6ec,roughness:.7,side:THREE.DoubleSide})));
+const N=75,K=32,pts=[];for(let i=0;i<=N*K;i++){const a=2*Math.PI*i/K;pts.push(new THREE.Vector3(2.53*Math.cos(a),-1.25+2.5*i/(N*K),2.53*Math.sin(a)))}
+const cu=new THREE.MeshStandardMaterial({color:0xe39a4a,roughness:.35,metalness:.5,emissive:0x2a1400});
+M.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N*K,.019,8,false),cu));
+const wire=a=>M.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(a.map(p=>new THREE.Vector3(p[0],p[1],p[2]))),30,.035,6),cu));
+wire([[2.53,1.25,0],[3.6,2,0],[5,1.1,0]]);wire([[2.53,-1.25,0],[3.6,-2,0],[5,-.7,0]]);
+const cap=new THREE.Group();cap.position.set(5,-.3,0);M.add(cap);const rotor=new THREE.Group();cap.add(rotor);
+const mS=new THREE.MeshStandardMaterial({color:0xb9c4cf,metalness:.4,roughness:.4,side:THREE.DoubleSide}),mR=new THREE.MeshStandardMaterial({color:0x4fd1c5,metalness:.3,roughness:.4,side:THREE.DoubleSide});
+const pg=new THREE.CylinderGeometry(1,1,.05,40,1,false,0,Math.PI);
+for(let i=0;i<5;i++){const s=new THREE.Mesh(pg,mS);s.position.y=i*.28-.56;cap.add(s);const r=new THREE.Mesh(pg,mR);r.position.y=i*.28-.42;rotor.add(r)}
+rotor.add(new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1.9,12),mS));
+const rings=[];for(let i=0;i<4;i++){const m=new THREE.Mesh(new THREE.TorusGeometry(1,.02,8,80),new THREE.MeshBasicMaterial({color:0x4fd1c5,transparent:true}));m.rotation.x=Math.PI/2;G.add(m);rings.push(m)}
+let spd=.5,drag=false,px=0,py=0;
+window.setC=c=>{rotor.rotation.y=(280-c)/260*Math.PI;spd=.25+(fOf(c)-5.5e5)/(2.1e6-5.5e5)*1.1};
+el.addEventListener('pointerdown',e=>{drag=true;px=e.clientX;py=e.clientY;el.style.cursor='grabbing';el.setPointerCapture(e.pointerId)});
+addEventListener('pointerup',()=>{drag=false;el.style.cursor='grab'});
+el.addEventListener('pointermove',e=>{if(!drag)return;G.rotation.y+=(e.clientX-px)*.01;G.rotation.x=Math.max(-.2,Math.min(1.2,G.rotation.x+(e.clientY-py)*.01));px=e.clientX;py=e.clientY});
+function loop(now){const t=now/1000,w=el.clientWidth,h=el.clientHeight,pr=R.getPixelRatio();
+if(el.width!==Math.floor(w*pr)||el.height!==Math.floor(h*pr)){R.setSize(w,h,false);C.aspect=w/h;C.position.set(0,3,Math.max(15,5.6/(.3443*C.aspect)));C.lookAt(0,0,0);C.updateProjectionMatrix()}
+if(!drag)G.rotation.y+=.0025;
+rings.forEach((m,i)=>{const p=(t*spd+i/4)%1,s=2.6+p*2.6;m.scale.set(s,s,s);m.material.opacity=.55*(1-p)});
+R.render(S,C);requestAnimationFrame(loop)}
+requestAnimationFrame(loop)})();
+$('cap').oninput=()=>{const c=+$('cap').value;$('rc').textContent=c;$('rf').textContent=(fOf(c)/1e6).toFixed(2);if(window.setC)window.setC(c)};$('cap').oninput();
+/* schematic */
+(function(){const sv=$('sch'),coil=(x,y,n)=>{let d='M'+x+','+y;for(let i=0;i<n;i++)d+='c-16,0 -16,12 0,12 ';return d};
+sv.setAttribute('viewBox','0 0 780 240');
+sv.innerHTML=`<g class="st gen on"><circle class="part" cx="60" cy="130" r="24"/><path class="part" d="M46,130q7,-14 14,0t14,0"/>
+<path class="wire" d="M60,106V80H150V112M60,154V180H150V148"/><path class="part" d="${coil(150,112,3)}"/>
+<path class="flow" d="M185,130H262"/><text x="190" y="116">a few cm</text><text x="22" y="222">Generator</text><text x="112" y="222">Test loop, 5 turns</text></g>
+<g class="st tank on"><path class="wire" d="M280,70H440M280,70V100M280,172V200M360,70V128M360,142V200M280,200H440"/><path class="part" d="${coil(280,100,6)}"/><path class="part" d="M345,128H375M345,142H375"/>
+<path class="flow" d="M300,70H425"/><circle class="fillp" cx="440" cy="70" r="4"/><text x="430" y="54">TP1</text><text x="226" y="222">L, 75 turns</text><text x="320" y="222">C, 20 to 280 pF</text></g>
+<g class="st det on"><path class="wire" d="M440,70H500M531,70H700M440,200H700M640,70V100M640,160V200M700,70V120M700,134V200"/><path class="part" d="M500,56V84L530,70ZM531,56V84"/><rect class="part" x="630" y="100" width="20" height="60"/><path class="part" d="M685,120H715M685,134H715"/>
+<path class="flow" d="M542,70H588"/><circle class="fillp" cx="600" cy="70" r="4"/><text x="590" y="54">TP3</text><text x="488" y="102">1N60P</text><text x="578" y="134">15 kΩ</text><text x="718" y="132">3.3 nF</text></g>`;
+document.querySelectorAll('#pills button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#pills button').forEach(x=>x.classList.toggle('on',x===b));const s=b.dataset.s;sv.querySelectorAll('g.st').forEach(g=>g.classList.toggle('on',s==='all'||g.classList.contains(s)))})})();
+/* AM wave -> diode -> envelope */
+(function(){const cv=$('wave'),x=cv.getContext('2d'),md=$('md');let W,H,t=0;
+function size(){const d=devicePixelRatio||1;W=cv.clientWidth;H=cv.clientHeight;cv.width=W*d;cv.height=H*d;x.setTransform(d,0,0,d,0,0)}
+size();addEventListener('resize',size);
+const nm=['1. At the tank: an AM wave','2. After the diode: peaks only','3. After 15 kΩ and 3.3 nF: the envelope is the sound'],cl=['#4fd1c5','#e39a4a','#e6edf5'];
+function frame(){t+=.016;const m=md.value/100,rh=H/3,A=rh*.47;x.clearRect(0,0,W,H);const tr=[[],[],[]];let e=0;
+for(let i=0;i<=W;i++){const u=i/W,env=.5*(1+m*Math.sin(2*Math.PI*(u*1.6-t*.25))),a=env*Math.sin(2*Math.PI*(u*42-t*2.2)),r=Math.max(0,a);e=Math.max(r,e*.94);tr[0].push(a);tr[1].push(r);tr[2].push(e)}
+tr.forEach((arr,k)=>{const y0=rh*k+rh*.55;x.strokeStyle=cl[k];x.lineWidth=k==2?2.4:1.4;x.beginPath();arr.forEach((v,i)=>i?x.lineTo(i,y0-v*A):x.moveTo(i,y0-v*A));x.stroke();x.fillStyle='#8fa3b8';x.font='12px JetBrains Mono,monospace';x.fillText(nm[k],10,rh*k+16)});
+requestAnimationFrame(frame)}frame()})();
+</script>
+</body></html>
